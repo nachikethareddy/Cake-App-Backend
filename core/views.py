@@ -4,6 +4,8 @@ from rest_framework.parsers import JSONParser
 from rest_framework import permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from django.contrib.auth import authenticate, login, logout
+from rest_framework.authtoken.models import Token
 
 from .models import (
     CakeDepartment,
@@ -70,3 +72,33 @@ class PostOrder(APIView):
             'error':serializer.errors,
             'error1':serializer1.errors,
         },status=400)
+
+
+class LoginView(APIView):
+    permission_classes = (permissions.AllowAny,)
+    parser_classes = [JSONParser]
+    def post(self, request):
+        req_data = request.data
+        user = authenticate(username=req_data['username'], password=req_data['password'])
+        if not user:
+            return Response({"message":"Invalid Details"}, status=400)
+        else:
+            token, _ = Token.objects.get_or_create(user=user)
+            dp = ''
+            try:
+                query = ProfilePic.objects.filter(user=user)
+                dp = ProfilePicSerializer(query,many=True).data
+            except Exception as e:
+                print(e)
+            return Response({
+                "message":"User Logged In", 
+                "user":{
+                    "id":user.id,
+                    "username":user.username,
+                    "full_name":user.full_name,
+                    "phone_no":user.phone,
+                    "date_of_birth":user.dob,
+                    "gender":user.gender,
+                    "token":token.key,
+                    "dp":dp
+            }})
