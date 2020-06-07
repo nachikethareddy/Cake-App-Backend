@@ -45,7 +45,7 @@ class CakeSerializer(serializers.ModelSerializer):
 class OrderCakeSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderCake
-        fields = '__all__'
+        exclude = ['occasion_root']
 
 class UserOccasionSerializer(serializers.ModelSerializer):
     class Meta:

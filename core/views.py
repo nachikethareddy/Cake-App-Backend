@@ -13,7 +13,8 @@ from .models import (
     UserCakeShopRelationship,
     Cakes,
     OrderCake,
-    CakeShopDetails
+    CakeShopDetails,
+    UserOccasion
 )
 
 from .serializers import (
@@ -60,20 +61,20 @@ class GetAllCakes(APIView):
 class PostOrder(APIView):
     parsers = [JSONParser]
     permissions = [permissions.IsAuthenticated]
-    def post(self,request,id):
+    def post(self,request):
         serializer = OrderCakeSerializer(data=request.data)
         serializer1 = UserOccasionSerializer(data=request.data)
-        if serializer.is_valid() and serializer1.is_valid():
-            serializer.save()
+        if serializer1.is_valid():
             serializer1.save()
-            return Response({
-                'status':'success',
-                'payload':serializer.data
-            },status=201)
+            if  serializer.is_valid():
+                serializer.save(occasion_root=UserOccasion.objects.filter(id=serializer1.data['id'])[0])
+                return Response({
+                    'status':'success',
+                    'payload':serializer.data
+                },status=201)
         return Response({
             'status':'failed',
-            'error':serializer.errors,
-            'error1':serializer1.errors,
+            'error':serializer1.errors,
         },status=400)
 
 

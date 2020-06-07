@@ -56,7 +56,10 @@ class UserCakeShopRelationship(models.Model):
     cake_shop = models.ForeignKey(CakeShopDetails,on_delete=models.CASCADE)
 
 
-
+class UserOccasion(models.Model):
+    id = models.AutoField(auto_created = True,primary_key = True)
+    phone = models.CharField(max_length=20)
+    occasion = models.CharField(max_length=100)
 
 class OrderCake(models.Model):
     id = models.AutoField(auto_created = True,primary_key = True)
@@ -66,7 +69,7 @@ class OrderCake(models.Model):
     phone_number = models.CharField(max_length=20)
     email = models.EmailField(null=True)
     date_of_order = models.DateTimeField(auto_now=True,editable=False)
-    occasion = models.CharField(max_length=100)
+    occasion_root = models.ForeignKey(UserOccasion,on_delete=models.CASCADE)
     date_of_delivery = models.DateTimeField()
     message_on_cake = models.CharField(max_length=255)
     special_instructions = models.CharField(max_length=255)
@@ -75,9 +78,6 @@ class OrderCake(models.Model):
     weight = models.DecimalField(default=0.5,max_digits=5, decimal_places=2)
 
 
-class UserOccasion(models.Model):
-    phone = models.CharField(max_length=20)
-    occasion = models.CharField(max_length=100)
 
 class PhotoCakeLogger(models.Model):
     order = models.OneToOneField(OrderCake,on_delete=models.CASCADE)
