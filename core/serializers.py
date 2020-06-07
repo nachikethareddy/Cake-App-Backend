@@ -6,9 +6,20 @@ from .models import (
     Cakes,
     Flavors,
     OrderCake,
-    UserOccasion
+    UserOccasion,
+    CakeShopDetails
 )
 
+
+class CakeShopDetailsDepartmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CakeShopDetails
+        fields = '__all__'
+
+class UserCakeShopSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserCakeShopRelationship
+        fields = '__all__'
 
 class CakeDepartmentSerializer(serializers.ModelSerializer):
     class Meta:

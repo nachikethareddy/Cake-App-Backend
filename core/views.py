@@ -12,14 +12,17 @@ from .models import (
     CakeShopDetails,
     UserCakeShopRelationship,
     Cakes,
-    OrderCake
+    OrderCake,
+    CakeShopDetails
 )
 
 from .serializers import (
     CakeDepartmentSerializer,
     CakeSerializer,
     OrderCakeSerializer,
-    UserOccasionSerializer
+    UserOccasionSerializer,
+    CakeShopDetailsDepartmentSerializer,
+    UserCakeShopSerializer
 )
 
 class GetAllDepartment(APIView):
@@ -84,21 +87,13 @@ class LoginView(APIView):
             return Response({"message":"Invalid Details"}, status=400)
         else:
             token, _ = Token.objects.get_or_create(user=user)
-            dp = ''
-            try:
-                query = ProfilePic.objects.filter(user=user)
-                dp = ProfilePicSerializer(query,many=True).data
-            except Exception as e:
-                print(e)
-            return Response({
-                "message":"User Logged In", 
-                "user":{
-                    "id":user.id,
-                    "username":user.username,
-                    "full_name":user.full_name,
-                    "phone_no":user.phone,
-                    "date_of_birth":user.dob,
-                    "gender":user.gender,
+            obejcts = UserCakeShopRelationship.objects.filter(user=user)
+            if obejcts.count() > 0:
+                serailiaer = UserCakeShopRelationship(obejcts,many=True)
+                return Response({
+                    "message":"User Logged In", 
+                    "cake_shop_details":serailiaer.data,
                     "token":token.key,
-                    "dp":dp
-            }})
+                })
+            else:
+                return Response(status=403)
