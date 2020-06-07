@@ -19,7 +19,7 @@ class CakeDepartment(models.Model):
 
 
 class Cakes(models.Model):
-    id =models.UUIDField(default=uuid.uuid4,on_delete=models.CASCADE)
+    id =models.UUIDField(default=uuid.uuid4,primary_key=True)
     cake_name = models.CharField(max_length=255)
     cake_department = models.ForeignKey(CakeDepartment,on_delete=models.CASCADE)
     cake_image = models.FileField(upload_to='cake_images/')
@@ -35,11 +35,11 @@ class Cakes(models.Model):
 
 
 class FlavourRoot(models.Model):
-    id =models.UUIDField(default=uuid.uuid4,on_delete=models.CASCADE)
+    id =models.UUIDField(default=uuid.uuid4,primary_key=True)
     falvour_root = models.CharField(max_length=255)
 
 class Flavors(models.Model):
-    id =models.UUIDField(default=uuid.uuid4,on_delete=models.CASCADE)
+    id =models.UUIDField(default=uuid.uuid4,primary_key=True)
     falvour_name = models.CharField(max_length=255)
     falvour_root = models.ForeignKey(FlavourRoot,on_delete=models.CASCADE)
     cake = models.ForeignKey(Cakes,on_delete=models.CASCADE)
@@ -65,14 +65,14 @@ class OrderCake(models.Model):
     flavor = models.ForeignKey(Flavors,on_delete=models.CASCADE,null=True)
     phone_number = models.CharField(max_length=20)
     email = models.EmailField(null=True)
-    date_of_order = models.DateTimeField(default=timezone.now(),editable=False)
+    date_of_order = models.DateTimeField(auto_now=True,editable=False)
     occasion = models.CharField(max_length=100)
     date_of_delivery = models.DateTimeField()
     message_on_cake = models.CharField(max_length=255)
     special_instructions = models.CharField(max_length=255)
     eggless =models.BooleanField(default=False)
     quantity = models.IntegerField(default=1)
-    weight = models.DecimalField(default=0.5)
+    weight = models.DecimalField(default=0.5,max_digits=5, decimal_places=2)
 
 
 class UserOccasion(models.Model):

@@ -89,7 +89,7 @@ class LoginView(APIView):
             token, _ = Token.objects.get_or_create(user=user)
             obejcts = UserCakeShopRelationship.objects.filter(user=user)
             if obejcts.count() > 0:
-                serailiaer = UserCakeShopRelationship(obejcts,many=True)
+                serailiaer = UserCakeShopSerializer(obejcts,many=True)
                 return Response({
                     "message":"User Logged In", 
                     "cake_shop_details":serailiaer.data,
