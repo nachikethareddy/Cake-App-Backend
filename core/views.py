@@ -48,7 +48,7 @@ class GetAllCakes(APIView):
     parsers = [JSONParser]
     permissions = [permissions.IsAuthenticated]
     def get(self,request,id):
-        query = CakeDepartment.objects.filter(cake_shop=id)
+        query = Cakes.objects.filter(cake_department=id)
         serailzer = CakeSerializer(query,many=True)
         return Response({
             'status':'success',
