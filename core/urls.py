@@ -3,4 +3,5 @@ from . import views
 
 urlpatterns = [
     path('login/',views.LoginView.as_view()),
+    path('get/departments/',views.GetAllDepartment.as_view())
 ]
