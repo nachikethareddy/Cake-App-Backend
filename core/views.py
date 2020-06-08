@@ -75,6 +75,7 @@ class PostOrder(APIView):
         return Response({
             'status':'failed',
             'error':serializer1.errors,
+            'error1':serializer.errors,
         },status=400)
 
 
