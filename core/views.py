@@ -14,7 +14,8 @@ from .models import (
     Cakes,
     OrderCake,
     CakeShopDetails,
-    UserOccasion
+    UserOccasion,
+    OrderProcessing
 )
 
 from .serializers import (
@@ -23,7 +24,9 @@ from .serializers import (
     OrderCakeSerializer,
     UserOccasionSerializer,
     CakeShopDetailsSerializer,
-    UserCakeShopSerializer
+    UserCakeShopSerializer,
+    OrderCakeAdminSerializer,
+    OrderProcessingSerializer
 )
 
 class GetAllDepartment(APIView):
@@ -124,3 +127,91 @@ class AdminLogin(APIView):
                 return Response(status=403)
 
 
+class AdminPendingCakes(APIView):
+    permission_classes = (permissions.AllowAny,)
+    parser_classes = [JSONParser]
+    def get(self,request):
+        user = CakeShopDetails.objects.filter(user=request.user)
+        if user.count()>0:
+            objects = OrderCake.objects.filter(order_status=0).filter(cake_details__cake_department__cake_shop__id=user[0].id)
+            serializer = OrderCakeAdminSerializer(objects,many=True)
+            return Response({
+                'status':'success',
+                'payload':serializer.data
+            },status=200)
+        else:
+            return Response(status=403)
+    
+    def post(self,request):
+        seralizer = OrderProcessingSerializer(data=request.data)
+        if seralizer.is_valid():
+            try:
+                OrderCake.objects.filter(id=request.data['order']).update(order_status=1)
+                seralizer.save()
+                return Response({
+                    'status':'done',
+                    'payload':seralizer.data  
+                    },status=201)
+            except Exception as e:
+                print(e)
+                return Response(status=403)
+        return Response({
+            'status':'failed',
+            'error':seralizer.errors,
+        },status=400)
+
+
+class AdminProccessingCakes(APIView):
+    permission_classes = (permissions.AllowAny,)
+    parser_classes = [JSONParser]
+
+    def get_queryset_for_update(self,request,id):
+        queryset = OrderProcessing.objects.filter(order=id)
+        if queryset.exists():
+            return True,queryset
+        else:
+            return False,"Object/Permssion doesn\'t exists!"
+
+    def get(self,request):
+        user = CakeShopDetails.objects.filter(user=request.user)
+        if user.count()>0:
+            objects = OrderCake.objects.filter(order_status=1).filter(cake_details__cake_department__cake_shop__id=user[0].id)
+            serializer = OrderCakeAdminSerializer(objects,many=True)
+            return Response({
+                'status':'success',
+                'payload':serializer.data
+            },status=200)
+        else:
+            return Response(status=403)
+    
+    def post(self,request):
+        id = request.data.get('order', None)
+        if id is not None:
+            status,queryset = self.get_queryset_for_update(request,id)
+            if not status:
+                return Response({
+                        'message':'Object/Permssion doesn\'t exists!'
+                    },status=404)
+            else:
+                seralizer = OrderProcessingSerializer(queryset[0],data=request.data,partial=True)
+                if seralizer.is_valid():
+                    try:
+                        OrderCake.objects.filter(id=request.data['order']).update(order_status=2)
+                        seralizer.save()
+                        return Response({
+                            'status':'done',
+                            'payload':seralizer.data  
+                            },status=201)
+                    except Exception as e:
+                        print(e)
+                        return Response(status=403)
+                return Response({
+                    'status':'failed',
+                    'error':seralizer.errors,
+                },status=400)
+        else:
+            return Response({
+                "status":"error",
+                "message": "ID is a mandatory feild to pass",
+                "payload": ""
+                },status=403)

@@ -76,14 +76,14 @@ class OrderCake(models.Model):
     eggless =models.BooleanField(default=False)
     quantity = models.IntegerField(default=1)
     weight = models.DecimalField(default=0.5,max_digits=5, decimal_places=2)
-    total_amount =  models.DecimalField(default=0,max_digits=5, decimal_places=2)
-    
+    total_amount =  models.DecimalField(default=0,max_digits=8, decimal_places=2)
+    order_status = models.IntegerField(default=0)
 
 class OrderProcessing(models.Model):
     order = models.OneToOneField(OrderCake,on_delete=models.CASCADE)
     approval =  models.BooleanField(default=False)
-    total_amount =  models.DecimalField(default=0,max_digits=5, decimal_places=2)
-    balance =  models.DecimalField(default=0,max_digits=5, decimal_places=2)
+    total_amount =  models.DecimalField(default=0,max_digits=8, decimal_places=2)
+    balance =  models.DecimalField(default=0,max_digits=8, decimal_places=2)
     order_type = models.CharField(max_length=100,choices=[('Pickup','Pickup'),('Delivery','Delivery')],default='Pickup')
     address = models.TextField(default='Pickup Order! No Address Supplied')
 

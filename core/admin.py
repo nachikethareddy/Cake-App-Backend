@@ -9,7 +9,8 @@ from .models import (
     Flavors,
     OrderCake,
     UserOccasion,
-    FlavourRoot
+    FlavourRoot,
+    OrderProcessing
 )
 
 
@@ -21,3 +22,4 @@ admin.site.register(Flavors)
 admin.site.register(Cakes)
 admin.site.register(UserCakeShopRelationship)
 admin.site.register(FlavourRoot)
+admin.site.register(OrderProcessing)

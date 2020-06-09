@@ -7,7 +7,8 @@ from .models import (
     Flavors,
     OrderCake,
     UserOccasion,
-    CakeShopDetails
+    CakeShopDetails,
+    OrderProcessing
 )
 
 
@@ -47,7 +48,22 @@ class OrderCakeSerializer(serializers.ModelSerializer):
         model = OrderCake
         exclude = ['occasion_root']
 
+class OrderCakeAdminSerializer(serializers.ModelSerializer):
+    order_details = serializers.SerializerMethodField()
+    cake_name = serializers.CharField(source='cake_details.cake_name')
+    cake_department = serializers.CharField(source='cake_details.cake_department.department_name')
+    class Meta:
+        model = OrderCake
+        exclude = ['occasion_root']
+    def get_order_details(self, obj):
+        return OrderProcessingSerializer(OrderProcessing.objects.filter(order=obj.id), many=True).data
+
 class UserOccasionSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserOccasion
+        fields = '__all__'
+
+class OrderProcessingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrderProcessing
         fields = '__all__'
