@@ -22,7 +22,7 @@ from .serializers import (
     CakeSerializer,
     OrderCakeSerializer,
     UserOccasionSerializer,
-    CakeShopDetailsDepartmentSerializer,
+    CakeShopDetailsSerializer,
     UserCakeShopSerializer
 )
 
@@ -99,3 +99,28 @@ class LoginView(APIView):
                 })
             else:
                 return Response(status=403)
+
+
+
+class AdminLogin(APIView):
+    permission_classes = (permissions.AllowAny,)
+    parser_classes = [JSONParser]
+    def post(self, request):
+        req_data = request.data
+        user = authenticate(username=req_data['username'], password=req_data['password'])
+        if not user:
+            return Response({"message":"Invalid Details"}, status=400)
+        else:
+            token, _ = Token.objects.get_or_create(user=user)
+            obejcts = CakeShopDetails.objects.filter(user=user)
+            if obejcts.count() > 0:
+                serailiaer = CakeShopDetailsSerializer(obejcts,many=True)
+                return Response({
+                    "message":"User Logged In", 
+                    "cake_shop_details":serailiaer.data,
+                    "token":token.key,
+                })
+            else:
+                return Response(status=403)
+
+

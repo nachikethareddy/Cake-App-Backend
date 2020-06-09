@@ -11,7 +11,7 @@ from .models import (
 )
 
 
-class CakeShopDetailsDepartmentSerializer(serializers.ModelSerializer):
+class CakeShopDetailsSerializer(serializers.ModelSerializer):
     class Meta:
         model = CakeShopDetails
         fields = '__all__'
