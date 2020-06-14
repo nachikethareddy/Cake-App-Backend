@@ -72,7 +72,7 @@ class OrderCake(models.Model):
     occasion_root = models.ForeignKey(UserOccasion,on_delete=models.CASCADE)
     date_of_delivery = models.DateTimeField()
     message_on_cake = models.CharField(max_length=255)
-    special_instructions = models.CharField(max_length=255,null=True)
+    special_instructions = models.CharField(max_length=255,null=True,default="No Special Instructions")
     eggless =models.BooleanField(default=False)
     quantity = models.IntegerField(default=1)
     weight = models.DecimalField(default=0.5,max_digits=5, decimal_places=2)
