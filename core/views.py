@@ -276,6 +276,9 @@ class GetUserList(APIView):
 
     def post(self,request):
         user = User.objects.filter(username=request.data['username'])
-        user.set_password(request.data['password'])
-        user.save()
-        return Response(status=204)
+        if user.exists():
+            user[0].set_password(request.data['password'])
+            user.save()
+            return Response(status=204)
+        else:
+            return Response(status=400)
