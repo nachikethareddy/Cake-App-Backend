@@ -235,7 +235,10 @@ class GetDBList(APIView):
                 if i['phone_number'] in phone_list:
                     for j in final_list:
                         if i['name'] == j['name']:
-                            j['occasion'].append(i['occasion'])
+                            j['occasion'].append({
+                                'name':i['occasion'],
+                                'order_date':i['date_of_order'],
+                            })
                         else:
                             pass
                 else:
@@ -243,9 +246,12 @@ class GetDBList(APIView):
                     final_list.append({
                         'name':i['name'],
                         'phone':i['phone_number'],
-                        'order_date':i['date_of_order'],
                         'occasion' :[
-                            i['occasion']
+                            {
+                                'name':i['occasion'],
+                                'order_date':i['date_of_order'],
+                            }
+                            
                         ]
                     })
                     phone_list.append(i['phone_number'])
