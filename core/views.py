@@ -278,7 +278,7 @@ class GetUserList(APIView):
         user = User.objects.filter(username=request.data['username'])
         if user.exists():
             user[0].set_password(request.data['password'])
-            user.save()
+            user[0].save()
             return Response(status=204)
         else:
             return Response(status=400)
