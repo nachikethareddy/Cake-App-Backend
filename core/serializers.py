@@ -55,6 +55,7 @@ class OrderCakeAdminSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderCake
         exclude = ['occasion_root']
+        depth = 1 
     def get_order_details(self, obj):
         return OrderProcessingSerializer(OrderProcessing.objects.filter(order=obj.id), many=True).data
 
@@ -67,6 +68,7 @@ class OrderProcessingSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderProcessing
         fields = '__all__'
+        depth = 1
 
 
 class DatabaseAdminSerializer(serializers.ModelSerializer):
