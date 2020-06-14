@@ -73,7 +73,7 @@ class DatabaseAdminSerializer(serializers.ModelSerializer):
     occasion = serializers.CharField(source='occasion_root.occasion')
     class Meta:
         model = OrderCake
-        fileds = ['id','name','phone_number','date_of_order','occasion']
+        fields = '__all__'
 
 
 class UserCakeShopAdminSerializer(serializers.ModelSerializer):
