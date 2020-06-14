@@ -18,6 +18,8 @@ from .models import (
     OrderProcessing
 )
 
+from django.contrib.auth.models import User
+
 from .serializers import (
     CakeDepartmentSerializer,
     CakeSerializer,
@@ -26,7 +28,9 @@ from .serializers import (
     CakeShopDetailsSerializer,
     UserCakeShopSerializer,
     OrderCakeAdminSerializer,
-    OrderProcessingSerializer
+    OrderProcessingSerializer,
+    DatabaseAdminSerializer,
+    UserCakeShopAdminSerializer
 )
 
 class GetAllDepartment(APIView):
@@ -122,7 +126,7 @@ class AdminLogin(APIView):
                     "message":"User Logged In", 
                     "cake_shop_details":serailiaer.data,
                     "token":token.key,
-                })
+                },status=200)
             else:
                 return Response(status=403)
 
@@ -215,3 +219,63 @@ class AdminProccessingCakes(APIView):
                 "message": "ID is a mandatory feild to pass",
                 "payload": ""
                 },status=403)
+
+
+class GetDBList(APIView):
+    permission_classes = (permissions.AllowAny,)
+    parser_classes = [JSONParser]
+    def get(self,request):
+        user = CakeShopDetails.objects.filter(user=request.user)
+        if user.count()>0:
+            query = OrderCake.objects.filter(cake_details__cake_department__cake_shop__id=user[0].id)
+            serializer = DatabaseAdminSerializer(query,many=True)
+            phone_list = []
+            final_list = []
+            for i in serializer.data:
+                if i['phone_number'] in phone_list:
+                    for j in final_list:
+                        if i['name'] == j['name']:
+                            j['occasion'].append(i['occasion'])
+                        else:
+                            pass
+                else:
+                    occasion = []
+                    final_list.append({
+                        'name':i['name'],
+                        'phone':i['phone_number'],
+                        'order_date':i['date_of_order'],
+                        'occasion' :[
+                            i['occasion']
+                        ]
+                    })
+                    phone_list.append(i['phone_number'])
+            return Response({
+                            'status':'success',
+                            'phone_list':phone_list,
+                            'user_list':final_list
+                        },status=200)
+        else:
+            return Response(status=403)
+    
+            
+class GetUserList(APIView):
+    permission_classes = (permissions.AllowAny,)
+    parser_classes = [JSONParser]
+    def get(self,request):
+        user = CakeShopDetails.objects.filter(user=request.user)
+        if user.count()>0:
+            query = UserCakeShopRelationship.objects.filter(cake_shop__id=user[0].id)
+            serializer = UserCakeShopAdminSerializer(query,many=True)
+            return Response({
+                'status':'success',
+                'payload':serializer.data
+            },status=200)
+
+        else:
+            return Response(status=403)
+
+    def post(self,request):
+        user = User.objects.filter(username=request.data['username'])
+        user.set_password(request.data['password'])
+        user.save()
+        return Response(status=204)
