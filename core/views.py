@@ -7,6 +7,8 @@ from rest_framework.response import Response
 from django.contrib.auth import authenticate, login, logout
 from rest_framework.authtoken.models import Token
 
+import requests as rq
+
 from .models import (
     CakeDepartment,
     CakeShopDetails,
@@ -107,6 +109,22 @@ class LoginView(APIView):
             else:
                 return Response(status=403)
 
+class AdminDash(APIView):
+    permission_classes = (permissions.AllowAny,)
+    parser_classes = [JSONParser]
+    def get(self,request):
+        user = CakeShopDetails.objects.filter(user=request.user)
+        if user.count()>0:
+            pending = OrderCake.objects.filter(order_status=0).filter(cake_details__cake_department__cake_shop__id=user[0].id)
+            processing = OrderCake.objects.filter(order_status=1).filter(cake_details__cake_department__cake_shop__id=user[0].id)
+            completed = OrderCake.objects.filter(order_status=1).filter(cake_details__cake_department__cake_shop__id=user[0].id)
+            return Response({
+                'pending':pending.count(),
+                'processing':processing.count(),
+                'completed':completed.count()
+            },status=200)
+        else:
+            return Response(status=403)
 
 
 class AdminLogin(APIView):
@@ -289,3 +307,29 @@ class GetUserList(APIView):
             return Response(status=204)
         else:
             return Response(status=400)
+
+class SendMessage(APIView):
+    def sendMsg(self,phones,message):
+        headers = {
+            'authorization': "YOUR_API_KEY",
+            'Content-Type': "application/x-www-form-urlencoded",
+            'Cache-Control': "no-cache",
+        }
+        url = "https://www.fast2sms.com/dev/bulk"
+        phone_list = ''
+        for i in phones:
+            phone_list+=i+","
+        payload = "sender_id=FSTSMS&message=" +  message + "&language=english&route=p&numbers="+phone_list[:-1]
+        response = rq.request("POST", url, data=payload, headers=headers)
+
+        print(response.text)
+        return response.status_code
+    
+    def post(self,request):
+        try:
+            resp = self.sendMsg(request.data['phones'],request.data['message'])
+            return Response({
+                'status':resp
+            },status=200)
+        except:
+            return Response(status=403)
