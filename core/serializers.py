@@ -68,7 +68,7 @@ class OrderProcessingSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderProcessing
         fields = '__all__'
-        depth = 1
+
 
 
 class DatabaseAdminSerializer(serializers.ModelSerializer):
