@@ -11,6 +11,7 @@ urlpatterns = [
     path('order/process/',views.AdminProccessingCakes.as_view()),
     path('dblist/',views.GetDBList.as_view()),
     path('users/',views.GetUserList.as_view()),
-    path('dash/',views.AdminDash.as_view())
+    path('dash/',views.AdminDash.as_view()),
+    path('message/',views.SendMessage.as_view())
 
 ]
