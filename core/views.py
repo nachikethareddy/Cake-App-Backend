@@ -176,6 +176,7 @@ class AdminPendingCakes(APIView):
                     },status=201)
             except Exception as e:
                 print(e)
+                OrderCake.objects.filter(id=request.data['order']).update(order_status=0)
                 return Response(status=403)
         return Response({
             'status':'failed',
