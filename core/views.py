@@ -309,9 +309,11 @@ class GetUserList(APIView):
             return Response(status=400)
 
 class SendMessage(APIView):
+    permission_classes = (permissions.AllowAny,)
+    parser_classes = [JSONParser]
     def sendMsg(self,phones,message):
         headers = {
-            'authorization': "YOUR_API_KEY",
+            'authorization': "zasPcL6w0f8F4dXhgyrEmjku9Mp3IbiVvQl2tRANGWKoe7xOZJ0uBy1dTe6cDIr9EfMY2KRxlZOS7zQX",
             'Content-Type': "application/x-www-form-urlencoded",
             'Cache-Control': "no-cache",
         }
