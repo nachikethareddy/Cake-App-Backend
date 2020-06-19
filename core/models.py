@@ -103,6 +103,7 @@ class OrderCake(models.Model):
     weight = models.DecimalField(default=0.5,max_digits=5, decimal_places=2)
     total_amount =  models.DecimalField(default=0,max_digits=8, decimal_places=2)
     order_status = models.IntegerField(default=0)
+    shape = models.CharField(max_length=100,default="Circle")
 
     def __str__(self):
         return str(self.id)

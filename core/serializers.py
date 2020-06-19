@@ -8,7 +8,8 @@ from .models import (
     OrderCake,
     UserOccasion,
     CakeShopDetails,
-    OrderProcessing
+    OrderProcessing,
+    PhotoCakeLogger
 )
 
 
@@ -50,6 +51,7 @@ class OrderCakeSerializer(serializers.ModelSerializer):
 
 class OrderCakeAdminSerializer(serializers.ModelSerializer):
     order_details = serializers.SerializerMethodField()
+    photos = serializers.SerializerMethodField()
     cake_name = serializers.CharField(source='cake_details.cake_name')
     cake_department = serializers.CharField(source='cake_details.cake_department.department_name')
     class Meta:
@@ -58,6 +60,16 @@ class OrderCakeAdminSerializer(serializers.ModelSerializer):
         depth = 1 
     def get_order_details(self, obj):
         return OrderProcessingSerializer(OrderProcessing.objects.filter(order=obj.id), many=True).data
+
+    def get_photos(self,obj):
+        return PhotoCakeLoggerSerializer(PhotoCakeLogger.objects.filter(order=obj.id),many=True).data
+
+
+class PhotoCakeLoggerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PhotoCakeLogger
+        fields = '__all__'
+        
 
 class UserOccasionSerializer(serializers.ModelSerializer):
     class Meta:
