@@ -11,11 +11,21 @@ class CakeShopDetails(models.Model):
     branch_address = models.TextField(default='No Address!')
 
 
+    def __str__(self):
+        return self.branch_name
+    
+
+
 class CakeDepartment(models.Model):
     id = models.UUIDField(default=uuid.uuid4,primary_key=True)
     cake_shop = models.ForeignKey(CakeShopDetails,on_delete=models.CASCADE)
     department_name = models.CharField(max_length=200)
     department_image = models.FileField(upload_to='cake_departments/')
+
+
+    def __str__(self):
+        return "{} - {}".format(self.cake_shop,self.department_name)
+    
 
 
 class Cakes(models.Model):
@@ -33,10 +43,18 @@ class Cakes(models.Model):
     custom_photo_upload = models.BooleanField(default=False)
     does_this_have_flavours = models.BooleanField(default=False)
 
+    def __str__(self):
+        return "{} - {} - {}".format(self.cake_name,self.cake_department.department_name,self.cake_department.cake_shop.branch_name)
+    
+
 
 class FlavourRoot(models.Model):
     id =models.UUIDField(default=uuid.uuid4,primary_key=True)
     falvour_root = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.falvour_root
+    
 
 class Flavors(models.Model):
     id =models.UUIDField(default=uuid.uuid4,primary_key=True)
@@ -50,11 +68,18 @@ class Flavors(models.Model):
     egg_less_price = models.IntegerField(default=50)
     is_egless_available = models.BooleanField(default=True)
 
+    def __str__(self):
+        return "{} - {}".format(self.falvour_name,self.cake.cake_name)
+    
+
 
 class UserCakeShopRelationship(models.Model):
     user = models.OneToOneField(User,on_delete=models.CASCADE)
     cake_shop = models.ForeignKey(CakeShopDetails,on_delete=models.CASCADE)
 
+    def __str__(self):
+        return "{} - {}".format(self.cake_shop.branch_name,self.user.username)
+    
 
 class UserOccasion(models.Model):
     id = models.AutoField(auto_created = True,primary_key = True)
@@ -79,6 +104,10 @@ class OrderCake(models.Model):
     total_amount =  models.DecimalField(default=0,max_digits=8, decimal_places=2)
     order_status = models.IntegerField(default=0)
 
+    def __str__(self):
+        return str(self.id)
+    
+
 class OrderProcessing(models.Model):
     order = models.OneToOneField(OrderCake,on_delete=models.CASCADE)
     approval =  models.BooleanField(default=False)
@@ -87,6 +116,13 @@ class OrderProcessing(models.Model):
     order_type = models.CharField(max_length=100,choices=[('Pickup','Pickup'),('Delivery','Delivery')],default='Pickup')
     address = models.TextField(default='Pickup Order! No Address Supplied')
 
+    def __str__(self):
+        return str(self.order.id)
+    
+
 class PhotoCakeLogger(models.Model):
     order = models.OneToOneField(OrderCake,on_delete=models.CASCADE)
     photo = models.FileField(upload_to='cake_order_photos/')
+
+    def __str__(self):
+        return str(self.order.id)
